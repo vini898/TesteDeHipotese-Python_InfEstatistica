@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}χ²stat — Testes Qui-Quadrado{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-tag">Inferência Estatística</div>
+  <h1>Testes <em>Qui-Quadrado</em></h1>
+  <p class="page-sub">
+    Selecione o tipo de teste para inserir seus dados e obter os resultados.
+  </p>
+</div>
+
+<div class="test-grid">
+
+  <a class="test-card" href="/aderencia">
+    <div class="tc-num">TESTE 01</div>
+    <h2>Aderência</h2>
+    <p>
+      Verifica se uma distribuição de frequências observadas
+      se ajusta a uma distribuição teórica alegada
+      (uniforme ou com probabilidades definidas).
+    </p>
+    <div class="tc-formula">χ² = Σ (O − E)² / E</div>
+  </a>
+
+  <a class="test-card" href="/independencia">
+    <div class="tc-num">TESTE 02</div>
+    <h2>Independência</h2>
+    <p>
+      Testa se duas variáveis categóricas em uma tabela de
+      contingência são independentes entre si. Uma única
+      amostra com duas variáveis.
+    </p>
+    <div class="tc-formula">E = (T.linha × T.coluna) / T.geral</div>
+  </a>
+
+  <a class="test-card" href="/homogeneidade">
+    <div class="tc-num">TESTE 03</div>
+    <h2>Homogeneidade</h2>
+    <p>
+      Verifica se populações distintas possuem a mesma
+      proporção de uma característica. Amostras coletadas
+      separadamente de cada grupo.
+    </p>
+    <div class="tc-formula">GL = (grupos−1) × (cats−1)</div>
+  </a>
+
+</div>
+{% endblock %}

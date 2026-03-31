@@ -1,0 +1,471 @@
+{% extends "base.html" %}
+{% block title %}Exemplos do PDF{% endblock %}
+
+{% block content %}
+<style>
+  /* ── EXTRAS PARA A PÁGINA DE EXEMPLOS ───────────────────── */
+  .ex-section-label {
+    font-family: var(--mono); font-size: .7rem;
+    color: var(--accent2); letter-spacing: .18em;
+    text-transform: uppercase; margin: 2.5rem 0 1rem;
+    display: flex; align-items: center; gap: .75rem;
+  }
+  .ex-section-label::after {
+    content:''; flex:1; height:1px; background: var(--border);
+  }
+
+  .ex-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; overflow: hidden; margin-bottom: 1.5rem;
+  }
+  .ex-card-head {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 1rem; flex-wrap: wrap;
+  }
+  .ex-fonte {
+    font-family: var(--mono); font-size: .68rem;
+    color: var(--muted); margin-bottom: .35rem;
+    letter-spacing: .06em;
+  }
+  .ex-titulo { font-size: 1rem; font-weight: 600; color: #e8eeff; }
+
+  .btn-carregar {
+    display: inline-flex; align-items: center; gap: .4rem;
+    background: transparent; border: 1px solid var(--accent);
+    color: var(--accent); border-radius: 6px;
+    padding: .45rem 1rem; font-family: var(--mono);
+    font-size: .72rem; font-weight: 600; letter-spacing: .08em;
+    text-transform: uppercase; text-decoration: none; white-space: nowrap;
+    transition: background .18s, color .18s;
+    flex-shrink: 0;
+  }
+  .btn-carregar:hover { background: var(--accent); color: #fff; }
+
+  .ex-body { padding: 1.25rem 1.5rem; }
+
+  .ex-context {
+    font-size: .85rem; color: var(--muted); line-height: 1.65;
+    margin-bottom: 1.1rem;
+  }
+
+  .hipoteses {
+    display: grid; grid-template-columns: 1fr 1fr; gap: .75rem;
+    margin-bottom: 1.25rem;
+  }
+  .hip-box {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 6px; padding: .75rem 1rem;
+  }
+  .hip-label {
+    font-family: var(--mono); font-size: .65rem; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .1em; margin-bottom: .3rem;
+  }
+  .hip-text { font-size: .83rem; color: var(--text); }
+
+  /* resultado inline */
+  .ex-resultado {
+    border-radius: 8px; padding: 1rem 1.25rem;
+    border-left: 4px solid;
+    display: flex; align-items: flex-start; gap: 1rem;
+    margin-bottom: 1.1rem;
+  }
+  .ex-resultado.rejeita   { background: rgba(255,79,109,.07); border-color: var(--reject); }
+  .ex-resultado.nao-rejeita { background: rgba(0,212,170,.07); border-color: var(--norej); }
+  .ex-res-icon { font-size: 1.3rem; line-height: 1; margin-top: .1rem; }
+  .ex-res-body .decisao-label {
+    font-family: var(--mono); font-size: .65rem; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .1em; margin-bottom: .25rem;
+  }
+  .ex-res-body .decisao-valor {
+    font-size: .9rem; font-weight: 600;
+  }
+  .rejeita   .decisao-valor { color: var(--reject); }
+  .nao-rejeita .decisao-valor { color: var(--norej); }
+  .ex-res-body .conclusao-texto {
+    font-size: .82rem; color: var(--muted); margin-top: .4rem; line-height: 1.55;
+  }
+
+  /* pills menores */
+  .mini-pills {
+    display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1rem;
+  }
+  .mini-pill {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 6px; padding: .45rem .85rem;
+  }
+  .mini-pill .mp-label {
+    font-family: var(--mono); font-size: .6rem; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .1em;
+  }
+  .mini-pill .mp-val {
+    font-family: var(--mono); font-size: .88rem;
+    font-weight: 600; color: var(--accent);
+  }
+
+  /* tabela compacta */
+  .tbl-compact { margin-bottom: 0; }
+  .tbl-compact th, .tbl-compact td { padding: .4rem .65rem; font-size: .78rem; }
+
+  @media (max-width:580px) {
+    .hipoteses { grid-template-columns: 1fr; }
+    .ex-card-head { flex-direction: column; }
+  }
+</style>
+
+<div class="page-header">
+  <div class="page-tag">Exemplos do PDF</div>
+  <h1>Exemplos <em>Resolvidos</em></h1>
+  <p class="page-sub">
+    Todos os exemplos extraídos dos materiais de aula, resolvidos automaticamente.
+    Clique em "Carregar no teste" para abrir o exemplo na página do respectivo teste.
+  </p>
+</div>
+
+
+{# ══════════════════════════════════════════════════════
+   ADERÊNCIA
+══════════════════════════════════════════════════════ #}
+<div class="ex-section-label">Teste de Aderência — {{ aderencias|length }} exemplo(s)</div>
+
+{% for item in aderencias %}
+{% set ex = item.exemplo %}
+{% set res = item.resultado %}
+<div class="ex-card">
+  <div class="ex-card-head">
+    <div>
+      <div class="ex-fonte">{{ ex.fonte }}</div>
+      <div class="ex-titulo">{{ ex.titulo }}</div>
+    </div>
+    <a class="btn-carregar" href="/aderencia?exemplo={{ ex.id }}">
+      ↗ Carregar no teste
+    </a>
+  </div>
+  <div class="ex-body">
+
+    <p class="ex-context">{{ ex.contexto }}</p>
+
+    <div class="hipoteses">
+      <div class="hip-box">
+        <div class="hip-label">H₀</div>
+        <div class="hip-text">{{ ex.h0 }}</div>
+      </div>
+      <div class="hip-box">
+        <div class="hip-label">H₁</div>
+        <div class="hip-text">{{ ex.h1 }}</div>
+      </div>
+    </div>
+
+    <div class="mini-pills">
+      <div class="mini-pill">
+        <div class="mp-label">χ² calculado</div>
+        <div class="mp-val">{{ res.qui2_calculado }}</div>
+      </div>
+      <div class="mini-pill">
+        <div class="mp-label">χ² crítico</div>
+        <div class="mp-val">{{ res.qui2_critico }}</div>
+      </div>
+      <div class="mini-pill">
+        <div class="mp-label">p-valor</div>
+        <div class="mp-val">{{ res.p_valor }}</div>
+      </div>
+      <div class="mini-pill">
+        <div class="mp-label">GL</div>
+        <div class="mp-val">{{ res.graus_liberdade }}</div>
+      </div>
+      <div class="mini-pill">
+        <div class="mp-label">n total</div>
+        <div class="mp-val">{{ res.n }}</div>
+      </div>
+      <div class="mini-pill">
+        <div class="mp-label">α</div>
+        <div class="mp-val">{{ res.alpha }}</div>
+      </div>
+    </div>
+
+    <div class="ex-resultado {{ 'rejeita' if res.rejeita_h0 else 'nao-rejeita' }}">
+      <div class="ex-res-icon">{{ '✗' if res.rejeita_h0 else '✓' }}</div>
+      <div class="ex-res-body">
+        <div class="decisao-label">Decisão</div>
+        <div class="decisao-valor">
+          {% if res.rejeita_h0 %}REJEITA H₀{% else %}NÃO REJEITA H₀{% endif %}
+        </div>
+        <div class="conclusao-texto">{{ ex.conclusao }}</div>
+      </div>
+    </div>
+
+    <details>
+      <summary style="cursor:pointer; font-family:var(--mono); font-size:.75rem;
+        color:var(--muted); margin-bottom:.75rem;">
+        ▸ Ver tabela de cálculo completa
+      </summary>
+      <div class="tbl-wrap">
+        <table class="tbl-compact">
+          <thead>
+            <tr>
+              <th>Categoria</th>
+              <th>Obs. (O)</th>
+              <th>Esp. (E)</th>
+              <th>O − E</th>
+              <th>(O−E)²/E</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for i in range(res.k) %}
+            <tr>
+              <td>{{ ex.rotulos[i] }}</td>
+              <td>{{ res.observadas[i] | int }}</td>
+              <td>{{ "%.4f"|format(res.esperadas[i]) }}</td>
+              <td>{{ "%.4f"|format(res.observadas[i] - res.esperadas[i]) }}</td>
+              <td>{{ "%.4f"|format(res.componentes[i]) }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+  </div>
+</div>
+{% endfor %}
+
+
+{# ══════════════════════════════════════════════════════
+   INDEPENDÊNCIA
+══════════════════════════════════════════════════════ #}
+<div class="ex-section-label">Teste de Independência — {{ independencias|length }} exemplo(s)</div>
+
+{% for item in independencias %}
+{% set ex = item.exemplo %}
+{% set res = item.resultado %}
+<div class="ex-card">
+  <div class="ex-card-head">
+    <div>
+      <div class="ex-fonte">{{ ex.fonte }}</div>
+      <div class="ex-titulo">{{ ex.titulo }}</div>
+    </div>
+    <a class="btn-carregar" href="/independencia?exemplo={{ ex.id }}">
+      ↗ Carregar no teste
+    </a>
+  </div>
+  <div class="ex-body">
+
+    <p class="ex-context">{{ ex.contexto }}</p>
+
+    <div class="hipoteses">
+      <div class="hip-box">
+        <div class="hip-label">H₀</div>
+        <div class="hip-text">{{ ex.h0 }}</div>
+      </div>
+      <div class="hip-box">
+        <div class="hip-label">H₁</div>
+        <div class="hip-text">{{ ex.h1 }}</div>
+      </div>
+    </div>
+
+    <div class="mini-pills">
+      <div class="mini-pill">
+        <div class="mp-label">χ² calculado</div>
+        <div class="mp-val">{{ res.qui2_calculado }}</div>
+      </div>
+      <div class="mini-pill">
+        <div class="mp-label">χ² crítico</div>
+        <div class="mp-val">{{ res.qui2_critico }}</div>
+      </div>
+      <div class="mini-pill">
+        <div class="mp-label">p-valor</div>
+        <div class="mp-val">{{ res.p_valor }}</div>
+      </div>
+      <div class="mini-pill">
+        <div class="mp-label">GL</div>
+        <div class="mp-val">{{ res.graus_liberdade }}</div>
+      </div>
+      <div class="mini-pill">
+        <div class="mp-label">Tabela</div>
+        <div class="mp-val">{{ res.n_linhas }}×{{ res.n_colunas }}</div>
+      </div>
+    </div>
+
+    <div class="ex-resultado {{ 'rejeita' if res.rejeita_h0 else 'nao-rejeita' }}">
+      <div class="ex-res-icon">{{ '✗' if res.rejeita_h0 else '✓' }}</div>
+      <div class="ex-res-body">
+        <div class="decisao-label">Decisão</div>
+        <div class="decisao-valor">
+          {% if res.rejeita_h0 %}REJEITA H₀{% else %}NÃO REJEITA H₀{% endif %}
+        </div>
+        <div class="conclusao-texto">{{ ex.conclusao }}</div>
+      </div>
+    </div>
+
+    <details>
+      <summary style="cursor:pointer; font-family:var(--mono); font-size:.75rem;
+        color:var(--muted); margin-bottom:.75rem;">
+        ▸ Ver tabelas observada e esperada
+      </summary>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+        <div>
+          <div style="font-family:var(--mono);font-size:.68rem;color:var(--muted);
+            text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem;">
+            Observadas
+          </div>
+          <div class="tbl-wrap">
+            <table class="tbl-compact">
+              <thead>
+                <tr>
+                  <th></th>
+                  {% for col in ex.rotulos_colunas %}<th>{{ col }}</th>{% endfor %}
+                </tr>
+              </thead>
+              <tbody>
+                {% for i in range(res.n_linhas) %}
+                <tr>
+                  <td>{{ ex.rotulos_linhas[i] }}</td>
+                  {% for j in range(res.n_colunas) %}
+                  <td>{{ res.observadas[i][j]|int }}</td>
+                  {% endfor %}
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div>
+          <div style="font-family:var(--mono);font-size:.68rem;color:var(--muted);
+            text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem;">
+            Esperadas
+          </div>
+          <div class="tbl-wrap">
+            <table class="tbl-compact">
+              <thead>
+                <tr>
+                  <th></th>
+                  {% for col in ex.rotulos_colunas %}<th>{{ col }}</th>{% endfor %}
+                </tr>
+              </thead>
+              <tbody>
+                {% for i in range(res.n_linhas) %}
+                <tr>
+                  <td>{{ ex.rotulos_linhas[i] }}</td>
+                  {% for j in range(res.n_colunas) %}
+                  <td>{{ res.esperadas[i][j] }}</td>
+                  {% endfor %}
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </details>
+
+  </div>
+</div>
+{% endfor %}
+
+
+{# ══════════════════════════════════════════════════════
+   HOMOGENEIDADE
+══════════════════════════════════════════════════════ #}
+<div class="ex-section-label">Teste de Homogeneidade — {{ homogeneidades|length }} exemplo(s)</div>
+
+{% for item in homogeneidades %}
+{% set ex = item.exemplo %}
+{% set res = item.resultado %}
+<div class="ex-card">
+  <div class="ex-card-head">
+    <div>
+      <div class="ex-fonte">{{ ex.fonte }}</div>
+      <div class="ex-titulo">{{ ex.titulo }}</div>
+    </div>
+    <a class="btn-carregar" href="/homogeneidade?exemplo={{ ex.id }}">
+      ↗ Carregar no teste
+    </a>
+  </div>
+  <div class="ex-body">
+
+    <p class="ex-context">{{ ex.contexto }}</p>
+
+    <div class="hipoteses">
+      <div class="hip-box">
+        <div class="hip-label">H₀</div>
+        <div class="hip-text">{{ ex.h0 }}</div>
+      </div>
+      <div class="hip-box">
+        <div class="hip-label">H₁</div>
+        <div class="hip-text">{{ ex.h1 }}</div>
+      </div>
+    </div>
+
+    <div class="mini-pills">
+      <div class="mini-pill">
+        <div class="mp-label">χ² calculado</div>
+        <div class="mp-val">{{ res.qui2_calculado }}</div>
+      </div>
+      <div class="mini-pill">
+        <div class="mp-label">χ² crítico</div>
+        <div class="mp-val">{{ res.qui2_critico }}</div>
+      </div>
+      <div class="mini-pill">
+        <div class="mp-label">p-valor</div>
+        <div class="mp-val">{{ res.p_valor }}</div>
+      </div>
+      <div class="mini-pill">
+        <div class="mp-label">GL</div>
+        <div class="mp-val">{{ res.graus_liberdade }}</div>
+      </div>
+      <div class="mini-pill">
+        <div class="mp-label">Grupos</div>
+        <div class="mp-val">{{ res.n_grupos }}</div>
+      </div>
+    </div>
+
+    <div class="ex-resultado {{ 'rejeita' if res.rejeita_h0 else 'nao-rejeita' }}">
+      <div class="ex-res-icon">{{ '✗' if res.rejeita_h0 else '✓' }}</div>
+      <div class="ex-res-body">
+        <div class="decisao-label">Decisão</div>
+        <div class="decisao-valor">
+          {% if res.rejeita_h0 %}REJEITA H₀{% else %}NÃO REJEITA H₀{% endif %}
+        </div>
+        <div class="conclusao-texto">{{ ex.conclusao }}</div>
+      </div>
+    </div>
+
+    <details>
+      <summary style="cursor:pointer; font-family:var(--mono); font-size:.75rem;
+        color:var(--muted); margin-bottom:.75rem;">
+        ▸ Ver tabela por grupo
+      </summary>
+      <div class="tbl-wrap">
+        <table class="tbl-compact">
+          <thead>
+            <tr>
+              <th>Grupo</th>
+              {% for col in ex.rotulos_colunas %}<th>{{ col }} (O)</th>{% endfor %}
+              {% for col in ex.rotulos_colunas %}<th>{{ col }} (E)</th>{% endfor %}
+              <th>Contrib. χ²</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for i in range(res.n_grupos) %}
+            <tr>
+              <td>{{ ex.rotulos_linhas[i] }}</td>
+              {% for j in range(res.n_categorias) %}
+              <td>{{ res.observadas[i][j]|int }}</td>
+              {% endfor %}
+              {% for j in range(res.n_categorias) %}
+              <td>{{ res.esperadas[i][j] }}</td>
+              {% endfor %}
+              <td><strong>{{ "%.4f"|format(res.componentes[i]|sum) }}</strong></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+  </div>
+</div>
+{% endfor %}
+
+{% endblock %}

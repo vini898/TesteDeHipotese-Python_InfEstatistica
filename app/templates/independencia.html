@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+{% block title %}Teste de Independência{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-tag">Teste 02</div>
+  <h1>Teste de <em>Independência</em></h1>
+  <p class="page-sub">
+    Verifica se as variáveis linha e coluna de uma tabela de contingência são independentes.
+  </p>
+</div>
+
+{% if exemplos %}
+<div class="card" style="margin-bottom:1.25rem;">
+  <div class="card-title">Exemplos do PDF</div>
+  <div style="display:flex; flex-wrap:wrap; gap:.6rem;">
+    {% for ex in exemplos %}
+    <a href="/independencia?exemplo={{ ex.id }}"
+       style="display:inline-flex; align-items:center; gap:.4rem;
+              background:var(--surface2); border:1px solid var(--border);
+              border-radius:6px; padding:.5rem 1rem; text-decoration:none;
+              font-family:var(--mono); font-size:.75rem; color:var(--text);
+              transition:border-color .18s, color .18s;"
+       onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'"
+       onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text)'">
+      <span style="color:var(--accent2)">▸</span> {{ ex.titulo }}
+    </a>
+    {% endfor %}
+    <a href="/exemplos" style="display:inline-flex; align-items:center; gap:.4rem;
+       background:transparent; border:1px dashed var(--border); border-radius:6px;
+       padding:.5rem 1rem; text-decoration:none; font-family:var(--mono);
+       font-size:.75rem; color:var(--muted);">
+      Ver todos resolvidos →
+    </a>
+  </div>
+</div>
+{% endif %}
+
+{% if erro %}
+  <div class="alert-error">⚠ {{ erro }}</div>
+{% endif %}
+
+<div class="card">
+  <div class="card-title">Dados de entrada</div>
+  <form method="POST">
+    <div class="field">
+      <label>TABELA DE CONTINGÊNCIA (frequências observadas)</label>
+      <textarea name="tabela" placeholder="25  64&#10;362 1427">{{ form.tabela or '' }}</textarea>
+      <div class="field-hint">
+        Cada linha da tabela = uma linha do textarea. Separe colunas com espaço ou vírgula.
+      </div>
+    </div>
+
+    <div class="field" style="max-width:180px">
+      <label>NÍVEL DE SIGNIFICÂNCIA (α)</label>
+      <input type="number" name="alpha" step="0.01" min="0.01" max="0.20"
+        value="{{ form.alpha or '0.05' }}" />
+    </div>
+
+    <button class="btn" type="submit">▶ Calcular</button>
+  </form>
+</div>
+
+{% if resultado %}
+<div class="result-banner {{ 'rejeita' if resultado.rejeita_h0 else 'nao-rejeita' }}">
+  <div class="banner-icon">{{ '✗' if resultado.rejeita_h0 else '✓' }}</div>
+  <div>
+    <div class="banner-label">Decisão (α = {{ resultado.alpha }})</div>
+    <div class="banner-title">
+      {% if resultado.rejeita_h0 %}
+        Rejeita H₀ — As variáveis são DEPENDENTES.
+      {% else %}
+        Não rejeita H₀ — As variáveis são INDEPENDENTES.
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="stats-row">
+  <div class="stat-pill">
+    <div class="pill-label">χ² calculado</div>
+    <div class="pill-value">{{ resultado.qui2_calculado }}</div>
+  </div>
+  <div class="stat-pill">
+    <div class="pill-label">χ² crítico</div>
+    <div class="pill-value">{{ resultado.qui2_critico }}</div>
+  </div>
+  <div class="stat-pill">
+    <div class="pill-label">p-valor</div>
+    <div class="pill-value">{{ resultado.p_valor }}</div>
+  </div>
+  <div class="stat-pill">
+    <div class="pill-label">Graus de liberdade</div>
+    <div class="pill-value">{{ resultado.graus_liberdade }}</div>
+  </div>
+  <div class="stat-pill">
+    <div class="pill-label">Tabela</div>
+    <div class="pill-value">{{ resultado.n_linhas }}×{{ resultado.n_colunas }}</div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title">Frequências Observadas</div>
+  <div class="tbl-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Linha</th>
+          {% for j in range(resultado.n_colunas) %}
+          <th>Col {{ j+1 }}</th>
+          {% endfor %}
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for i in range(resultado.n_linhas) %}
+        <tr>
+          <td>Linha {{ i+1 }}</td>
+          {% for j in range(resultado.n_colunas) %}
+          <td>{{ resultado.observadas[i][j] | int }}</td>
+          {% endfor %}
+          <td><strong>{{ resultado.totais_linhas[i] }}</strong></td>
+        </tr>
+        {% endfor %}
+        <tr>
+          <td><strong>Total</strong></td>
+          {% for j in range(resultado.n_colunas) %}
+          <td><strong>{{ resultado.totais_colunas[j] }}</strong></td>
+          {% endfor %}
+          <td><strong>{{ resultado.total_geral }}</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title">Frequências Esperadas & Contribuições ao χ²</div>
+  <div class="tbl-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Linha</th>
+          {% for j in range(resultado.n_colunas) %}
+          <th>Esp. col {{ j+1 }}</th>
+          {% endfor %}
+          {% for j in range(resultado.n_colunas) %}
+          <th>(O−E)²/E col {{ j+1 }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for i in range(resultado.n_linhas) %}
+        <tr>
+          <td>Linha {{ i+1 }}</td>
+          {% for j in range(resultado.n_colunas) %}
+          <td>{{ resultado.esperadas[i][j] }}</td>
+          {% endfor %}
+          {% for j in range(resultado.n_colunas) %}
+          <td>{{ resultado.componentes[i][j] }}</td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}
