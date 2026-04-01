@@ -1,46 +1,39 @@
 {% extends "base.html" %}
+{% from "_resultado_bloco.html" import bloco_resultado %}
 {% block title %}Teste de Aderência{% endblock %}
 
 {% block content %}
 <div class="page-header">
   <div class="page-tag">Teste 01</div>
   <h1>Teste de <em>Aderência</em></h1>
-  <p class="page-sub">
-    Verifica se as frequências observadas seguem uma distribuição alegada.
-  </p>
+  <p class="page-sub">Verifica se as frequências observadas seguem uma distribuição alegada.</p>
 </div>
 
 {% if exemplos %}
 <div class="card" style="margin-bottom:1.25rem;">
   <div class="card-title">Exemplos do PDF</div>
-  <div style="display:flex; flex-wrap:wrap; gap:.6rem;">
+  <div style="display:flex;flex-wrap:wrap;gap:.6rem;">
     {% for ex in exemplos %}
     <a href="/aderencia?exemplo={{ ex.id }}"
-       style="display:inline-flex; align-items:center; gap:.4rem;
-              background:var(--surface2); border:1px solid var(--border);
-              border-radius:6px; padding:.5rem 1rem; text-decoration:none;
-              font-family:var(--mono); font-size:.75rem; color:var(--text);
-              transition:border-color .18s, color .18s;"
+       style="display:inline-flex;align-items:center;gap:.4rem;background:var(--surface2);
+              border:1px solid var(--border);border-radius:6px;padding:.5rem 1rem;
+              text-decoration:none;font-family:var(--mono);font-size:.75rem;color:var(--text);
+              transition:border-color .18s,color .18s;"
        onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'"
        onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text)'">
       <span style="color:var(--accent2)">▸</span> {{ ex.titulo }}
     </a>
     {% endfor %}
-    <a href="/exemplos" style="display:inline-flex; align-items:center; gap:.4rem;
-       background:transparent; border:1px dashed var(--border); border-radius:6px;
-       padding:.5rem 1rem; text-decoration:none; font-family:var(--mono);
-       font-size:.75rem; color:var(--muted);">
-      Ver todos resolvidos →
-    </a>
+    <a href="/exemplos" style="display:inline-flex;align-items:center;gap:.4rem;
+       background:transparent;border:1px dashed var(--border);border-radius:6px;
+       padding:.5rem 1rem;text-decoration:none;font-family:var(--mono);
+       font-size:.75rem;color:var(--muted);">Ver todos →</a>
   </div>
 </div>
 {% endif %}
 
-{% if erro %}
-  <div class="alert-error">⚠ {{ erro }}</div>
-{% endif %}
+{% if erro %}<div class="alert-error">⚠ {{ erro }}</div>{% endif %}
 
-<!-- FORMULÁRIO -->
 <div class="card">
   <div class="card-title">Dados de entrada</div>
   <form method="POST">
@@ -51,116 +44,47 @@
         value="{{ form.observadas or '' }}" />
       <div class="field-hint">Separe os valores por espaço ou vírgula.</div>
     </div>
-
     <div class="field">
       <label>DISTRIBUIÇÃO ESPERADA</label>
       <div class="radio-group">
-        <label>
-          <input type="radio" name="tipo_esperada" value="uniforme"
-            {% if form.get('tipo_esperada','uniforme') == 'uniforme' %}checked{% endif %}>
-          Uniforme (1/k para cada categoria)
+        <label><input type="radio" name="tipo_esperada" value="uniforme"
+          {% if form.get('tipo_esperada','uniforme') == 'uniforme' %}checked{% endif %}>
+          Uniforme (E = n/k)
         </label>
-        <label>
-          <input type="radio" name="tipo_esperada" value="personalizada"
-            {% if form.get('tipo_esperada') == 'personalizada' %}checked{% endif %}>
+        <label><input type="radio" name="tipo_esperada" value="personalizada"
+          {% if form.get('tipo_esperada') == 'personalizada' %}checked{% endif %}>
           Probabilidades personalizadas
         </label>
       </div>
     </div>
-
     <div class="field" id="campo-probs"
       style="{{ '' if form.get('tipo_esperada') == 'personalizada' else 'display:none' }}">
       <label>PROBABILIDADES (devem somar 1)</label>
       <input type="text" name="probabilidades"
         placeholder="ex: 0.301 0.176 0.125 0.097 0.079 0.067 0.058 0.051 0.046"
         value="{{ form.probabilidades or '' }}" />
-      <div class="field-hint">Uma probabilidade para cada categoria, somando 1.</div>
     </div>
-
     <div class="field" style="max-width:180px">
       <label>NÍVEL DE SIGNIFICÂNCIA (α)</label>
       <input type="number" name="alpha" step="0.01" min="0.01" max="0.20"
         value="{{ form.alpha or '0.05' }}" />
     </div>
-
     <button class="btn" type="submit">▶ Calcular</button>
   </form>
 </div>
 
-<!-- RESULTADO -->
 {% if resultado %}
-<div class="result-banner {{ 'rejeita' if resultado.rejeita_h0 else 'nao-rejeita' }}">
-  <div class="banner-icon">{{ '✗' if resultado.rejeita_h0 else '✓' }}</div>
-  <div>
-    <div class="banner-label">Decisão (α = {{ resultado.alpha }})</div>
-    <div class="banner-title">
-      {% if resultado.rejeita_h0 %}
-        Rejeita H₀ — As frequências NÃO seguem a distribuição alegada.
-      {% else %}
-        Não rejeita H₀ — As frequências seguem a distribuição alegada.
-      {% endif %}
-    </div>
-  </div>
-</div>
-
-<div class="stats-row">
-  <div class="stat-pill">
-    <div class="pill-label">χ² calculado</div>
-    <div class="pill-value">{{ resultado.qui2_calculado }}</div>
-  </div>
-  <div class="stat-pill">
-    <div class="pill-label">χ² crítico</div>
-    <div class="pill-value">{{ resultado.qui2_critico }}</div>
-  </div>
-  <div class="stat-pill">
-    <div class="pill-label">p-valor</div>
-    <div class="pill-value">{{ resultado.p_valor }}</div>
-  </div>
-  <div class="stat-pill">
-    <div class="pill-label">Graus de liberdade</div>
-    <div class="pill-value">{{ resultado.graus_liberdade }}</div>
-  </div>
-  <div class="stat-pill">
-    <div class="pill-label">n total</div>
-    <div class="pill-value">{{ resultado.n }}</div>
-  </div>
-</div>
-
-<div class="card">
-  <div class="card-title">Tabela de cálculo</div>
-  <div class="tbl-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>Categoria</th>
-          <th>Obs. (O)</th>
-          <th>Esp. (E)</th>
-          <th>O − E</th>
-          <th>(O−E)²/E</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for i in range(resultado.k) %}
-        <tr>
-          <td>{{ i + 1 }}</td>
-          <td>{{ resultado.observadas[i] | int }}</td>
-          <td>{{ "%.4f"|format(resultado.esperadas[i]) }}</td>
-          <td>{{ "%.4f"|format(resultado.observadas[i] - resultado.esperadas[i]) }}</td>
-          <td>{{ "%.4f"|format(resultado.componentes[i]) }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-</div>
+  {% set rotulos = form.observadas.split() | list %}
+  {{ bloco_resultado(resultado, passos, interpretacao, titulo_exemplo,
+                     tipo='aderencia', rotulos_obs=rotulos) }}
 {% endif %}
 
 <script>
-  document.querySelectorAll('input[name="tipo_esperada"]').forEach(r => {
-    r.addEventListener('change', () => {
-      document.getElementById('campo-probs').style.display =
-        r.value === 'personalizada' ? 'block' : 'none';
-    });
+document.querySelectorAll('input[name="tipo_esperada"]').forEach(r => {
+  r.addEventListener('change', () => {
+    document.getElementById('campo-probs').style.display =
+      r.value === 'personalizada' ? 'block' : 'none';
   });
+});
 </script>
 {% endblock %}

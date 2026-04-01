@@ -1,0 +1,321 @@
+{% macro bloco_resultado(resultado, passos, interpretacao, titulo_exemplo,
+                         tipo, rotulos_obs=None, rotulos_linhas=None, rotulos_colunas=None) %}
+<style>
+/* ── PASSO A PASSO ───────────────────────────────────────── */
+.steps { counter-reset: step; margin-bottom: 1.5rem; }
+.step {
+  display: grid; grid-template-columns: 44px 1fr;
+  gap: 0 1rem; margin-bottom: .1rem; position: relative;
+}
+.step:not(:last-child) .step-line {
+  position: absolute; left: 21px; top: 44px;
+  width: 2px; height: calc(100% - 8px);
+  background: var(--border); z-index: 0;
+}
+.step-num {
+  width: 44px; height: 44px; border-radius: 50%;
+  border: 2px solid var(--border);
+  background: var(--surface2);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: .75rem; font-weight: 700;
+  color: var(--muted); flex-shrink: 0; z-index: 1;
+  transition: border-color .2s, color .2s, background .2s;
+}
+.step.step-decisao .step-num {
+  border-color: var(--accent); color: var(--accent);
+  background: rgba(61,127,255,.1);
+}
+.step-body {
+  padding: .65rem 0 1.25rem;
+}
+.step-titulo {
+  font-family: var(--mono); font-size: .72rem; font-weight: 600;
+  color: var(--muted); text-transform: uppercase; letter-spacing: .1em;
+  margin-bottom: .3rem;
+}
+.step-conteudo {
+  font-size: .88rem; color: var(--text); line-height: 1.65;
+}
+.step-conteudo code {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 4px; padding: .1em .45em;
+  font-family: var(--mono); font-size: .82em; color: var(--accent2);
+}
+.step-destaque {
+  display: inline-block; margin-top: .5rem;
+  background: var(--surface2); border: 1px solid var(--accent);
+  border-radius: 6px; padding: .3rem .75rem;
+  font-family: var(--mono); font-size: .82rem; color: var(--accent);
+}
+
+/* ── GRÁFICO ─────────────────────────────────────────────── */
+.chart-area {
+  margin-bottom: 1.5rem;
+}
+.chart-title {
+  font-family: var(--mono); font-size: .72rem; color: var(--muted);
+  text-transform: uppercase; letter-spacing: .1em; margin-bottom: .85rem;
+}
+.bar-row {
+  display: grid; grid-template-columns: 90px 1fr 1fr 80px;
+  align-items: center; gap: .5rem; margin-bottom: .55rem;
+  font-size: .78rem;
+}
+.bar-label {
+  font-family: var(--mono); font-size: .72rem; color: var(--muted);
+  text-align: right; white-space: nowrap; overflow: hidden;
+  text-overflow: ellipsis;
+}
+.bar-track { height: 18px; border-radius: 4px; background: var(--surface2); }
+.bar-obs   { height: 18px; border-radius: 4px; background: var(--accent);
+             transition: width .6s cubic-bezier(.22,1,.36,1); }
+.bar-esp   { height: 18px; border-radius: 4px;
+             background: rgba(0,212,170,.45); border: 1px dashed var(--accent2);
+             transition: width .6s cubic-bezier(.22,1,.36,1); }
+.bar-val {
+  font-family: var(--mono); font-size: .7rem; color: var(--muted);
+  display: flex; flex-direction: column; gap: .1rem;
+}
+.bar-val .v-obs { color: var(--accent); }
+.bar-val .v-esp { color: var(--accent2); }
+.chart-legend {
+  display: flex; gap: 1.25rem; margin-top: .75rem;
+  font-family: var(--mono); font-size: .72rem; color: var(--muted);
+}
+.leg-dot { display: inline-block; width: 10px; height: 10px;
+           border-radius: 2px; margin-right: .35rem; vertical-align: middle; }
+
+/* ── INTERPRETAÇÃO ───────────────────────────────────────── */
+.interp-box {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-left: 4px solid var(--accent2);
+  border-radius: 8px; padding: 1.1rem 1.25rem;
+  font-size: .88rem; line-height: 1.7; color: var(--text);
+  margin-bottom: 1.5rem;
+}
+.interp-label {
+  font-family: var(--mono); font-size: .65rem; color: var(--accent2);
+  text-transform: uppercase; letter-spacing: .12em; margin-bottom: .45rem;
+}
+</style>
+
+{# ── BANNER DE DECISÃO ─────────────────────────────────── #}
+<div class="result-banner {{ 'rejeita' if resultado.rejeita_h0 else 'nao-rejeita' }}">
+  <div class="banner-icon">{{ '✗' if resultado.rejeita_h0 else '✓' }}</div>
+  <div>
+    <div class="banner-label">Decisão (α = {{ resultado.alpha }})</div>
+    <div class="banner-title">
+      {% if resultado.rejeita_h0 %}REJEITA H₀{% else %}NÃO REJEITA H₀{% endif %}
+      {% if titulo_exemplo %} — {{ titulo_exemplo }}{% endif %}
+    </div>
+  </div>
+</div>
+
+{# ── PILLS ─────────────────────────────────────────────── #}
+<div class="stats-row">
+  {% if tipo == 'aderencia' %}
+  <div class="stat-pill"><div class="pill-label">χ² calculado</div><div class="pill-value">{{ resultado.qui2_calculado }}</div></div>
+  <div class="stat-pill"><div class="pill-label">χ² crítico</div><div class="pill-value">{{ resultado.qui2_critico }}</div></div>
+  <div class="stat-pill"><div class="pill-label">p-valor</div><div class="pill-value">{{ resultado.p_valor }}</div></div>
+  <div class="stat-pill"><div class="pill-label">GL</div><div class="pill-value">{{ resultado.graus_liberdade }}</div></div>
+  <div class="stat-pill"><div class="pill-label">n</div><div class="pill-value">{{ resultado.n }}</div></div>
+  {% else %}
+  <div class="stat-pill"><div class="pill-label">χ² calculado</div><div class="pill-value">{{ resultado.qui2_calculado }}</div></div>
+  <div class="stat-pill"><div class="pill-label">χ² crítico</div><div class="pill-value">{{ resultado.qui2_critico }}</div></div>
+  <div class="stat-pill"><div class="pill-label">p-valor</div><div class="pill-value">{{ resultado.p_valor }}</div></div>
+  <div class="stat-pill"><div class="pill-label">GL</div><div class="pill-value">{{ resultado.graus_liberdade }}</div></div>
+  {% if tipo == 'independencia' %}
+  <div class="stat-pill"><div class="pill-label">Tabela</div><div class="pill-value">{{ resultado.n_linhas }}×{{ resultado.n_colunas }}</div></div>
+  {% else %}
+  <div class="stat-pill"><div class="pill-label">Grupos</div><div class="pill-value">{{ resultado.n_grupos }}</div></div>
+  {% endif %}
+  {% endif %}
+</div>
+
+{# ── GRÁFICO O vs E (só aderência) ─────────────────────── #}
+{% if tipo == 'aderencia' and rotulos_obs %}
+{% set max_val = resultado.observadas | max %}
+<div class="card chart-area">
+  <div class="card-title">Frequências Observadas vs Esperadas</div>
+  {% for i in range(resultado.k) %}
+  {% set pct_obs = (resultado.observadas[i] / max_val * 100) | round(1) %}
+  {% set pct_esp = (resultado.esperadas[i]  / max_val * 100) | round(1) %}
+  <div class="bar-row">
+    <div class="bar-label">{{ rotulos_obs[i] }}</div>
+    <div>
+      <div class="bar-track">
+        <div class="bar-obs" style="width:{{ pct_obs }}%"></div>
+      </div>
+    </div>
+    <div>
+      <div class="bar-track">
+        <div class="bar-esp" style="width:{{ pct_esp }}%"></div>
+      </div>
+    </div>
+    <div class="bar-val">
+      <span class="v-obs">O: {{ resultado.observadas[i] | int }}</span>
+      <span class="v-esp">E: {{ "%.1f"|format(resultado.esperadas[i]) }}</span>
+    </div>
+  </div>
+  {% endfor %}
+  <div class="chart-legend">
+    <span><span class="leg-dot" style="background:var(--accent)"></span>Observada (O)</span>
+    <span><span class="leg-dot" style="background:rgba(0,212,170,.45);border:1px dashed var(--accent2)"></span>Esperada (E)</span>
+  </div>
+</div>
+{% endif %}
+
+{# ── PASSO A PASSO ─────────────────────────────────────── #}
+{% if passos %}
+<div class="card">
+  <div class="card-title">Resolução Passo a Passo</div>
+  <div class="steps">
+    {% for p in passos %}
+    <div class="step {{ 'step-decisao' if p.numero == 6 else '' }}">
+      <div class="step-line"></div>
+      <div class="step-num">{{ p.numero }}</div>
+      <div class="step-body">
+        <div class="step-titulo">{{ p.titulo }}</div>
+        <div class="step-conteudo">{{ p.conteudo | safe }}</div>
+        {% if p.destaque %}
+        <div class="step-destaque">{{ p.destaque }}</div>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+{# ── INTERPRETAÇÃO ─────────────────────────────────────── #}
+{% if interpretacao %}
+<div class="interp-box">
+  <div class="interp-label">Interpretação</div>
+  {{ interpretacao | safe }}
+</div>
+{% endif %}
+
+{# ── TABELA DETALHADA ──────────────────────────────────── #}
+{% if tipo == 'aderencia' %}
+<details>
+  <summary style="cursor:pointer; font-family:var(--mono); font-size:.75rem;
+    color:var(--muted); margin-bottom:.75rem; padding:.5rem 0;">
+    ▸ Ver tabela de cálculo completa
+  </summary>
+  <div class="card">
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Categoria</th>
+            <th>Obs. (O)</th>
+            <th>Esp. (E)</th>
+            <th>O − E</th>
+            <th>(O−E)²</th>
+            <th>(O−E)²/E</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for i in range(resultado.k) %}
+          <tr>
+            <td>{{ rotulos_obs[i] if rotulos_obs else i+1 }}</td>
+            <td>{{ resultado.observadas[i] | int }}</td>
+            <td>{{ "%.4f"|format(resultado.esperadas[i]) }}</td>
+            <td>{{ "%.4f"|format(resultado.observadas[i] - resultado.esperadas[i]) }}</td>
+            <td>{{ "%.4f"|format((resultado.observadas[i] - resultado.esperadas[i])**2) }}</td>
+            <td>{{ "%.4f"|format(resultado.componentes[i]) }}</td>
+          </tr>
+          {% endfor %}
+          <tr style="font-weight:600; color:var(--accent)">
+            <td>Total</td>
+            <td>{{ resultado.n }}</td>
+            <td>{{ "%.4f"|format(resultado.esperadas | sum) }}</td>
+            <td>—</td>
+            <td>—</td>
+            <td>{{ resultado.qui2_calculado }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</details>
+
+{% else %}
+<details>
+  <summary style="cursor:pointer; font-family:var(--mono); font-size:.75rem;
+    color:var(--muted); margin-bottom:.75rem; padding:.5rem 0;">
+    ▸ Ver tabelas observada, esperada e contribuições
+  </summary>
+  <div class="card">
+    <div class="card-title">Observadas</div>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            {% if rotulos_colunas %}
+              {% for col in rotulos_colunas %}<th>{{ col }}</th>{% endfor %}
+            {% else %}
+              {% if tipo == 'independencia' %}
+                {% for j in range(resultado.n_colunas) %}<th>Col {{ j+1 }}</th>{% endfor %}
+              {% else %}
+                {% for j in range(resultado.n_categorias) %}<th>Cat {{ j+1 }}</th>{% endfor %}
+              {% endif %}
+            {% endif %}
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% set n_rows = resultado.n_linhas if tipo == 'independencia' else resultado.n_grupos %}
+          {% set n_cols = resultado.n_colunas if tipo == 'independencia' else resultado.n_categorias %}
+          {% set totais = resultado.totais_linhas if tipo == 'independencia' else resultado.totais_grupos %}
+          {% for i in range(n_rows) %}
+          <tr>
+            <td>{{ rotulos_linhas[i] if rotulos_linhas else ('Linha ' ~ (i+1) if tipo == 'independencia' else 'Grupo ' ~ (i+1)) }}</td>
+            {% for j in range(n_cols) %}
+            <td>{{ resultado.observadas[i][j] | int }}</td>
+            {% endfor %}
+            <td><strong>{{ totais[i] }}</strong></td>
+          </tr>
+          {% endfor %}
+          <tr style="font-weight:600">
+            <td>Total</td>
+            {% set totais_cols = resultado.totais_colunas if tipo == 'independencia' else resultado.totais_categorias %}
+            {% for t in totais_cols %}<td><strong>{{ t }}</strong></td>{% endfor %}
+            <td><strong>{{ resultado.total_geral }}</strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="card" style="margin-top:.5rem">
+    <div class="card-title">Esperadas</div>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            {% if tipo == 'independencia' %}
+              {% for j in range(resultado.n_colunas) %}<th>Col {{ j+1 }}</th>{% endfor %}
+            {% else %}
+              {% for j in range(resultado.n_categorias) %}<th>Cat {{ j+1 }}</th>{% endfor %}
+            {% endif %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for i in range(n_rows) %}
+          <tr>
+            <td>{{ rotulos_linhas[i] if rotulos_linhas else ('Linha ' ~ (i+1) if tipo == 'independencia' else 'Grupo ' ~ (i+1)) }}</td>
+            {% for j in range(n_cols) %}
+            <td>{{ resultado.esperadas[i][j] }}</td>
+            {% endfor %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</details>
+{% endif %}
+
+{% endmacro %}
