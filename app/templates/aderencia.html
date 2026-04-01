@@ -74,7 +74,8 @@
 </div>
 
 {% if resultado %}
-  {% set rotulos = form.observadas.split() | list %}
+  {% set rotulos_raw = form.observadas.replace(',', ' ') %}
+  {% set rotulos = rotulos_raw.split() | list %}
   {{ bloco_resultado(resultado, passos, interpretacao, titulo_exemplo,
                      tipo='aderencia', rotulos_obs=rotulos) }}
 {% endif %}
