@@ -14,8 +14,7 @@
 }
 .step-num {
   width: 44px; height: 44px; border-radius: 50%;
-  border: 2px solid var(--border);
-  background: var(--surface2);
+  border: 2px solid var(--border); background: var(--surface2);
   display: flex; align-items: center; justify-content: center;
   font-family: var(--mono); font-size: .75rem; font-weight: 500;
   color: var(--muted); flex-shrink: 0; z-index: 1;
@@ -25,17 +24,13 @@
   border-color: var(--accent); color: var(--accent);
   background: rgba(37,99,235,.08);
 }
-.step-body {
-  padding: .65rem 0 1.25rem;
-}
+.step-body { padding: .65rem 0 1.25rem; }
 .step-titulo {
   font-family: var(--mono); font-size: .7rem; font-weight: 500;
   color: var(--muted); text-transform: uppercase; letter-spacing: .1em;
   margin-bottom: .3rem;
 }
-.step-conteudo {
-  font-size: .88rem; color: var(--text); line-height: 1.65;
-}
+.step-conteudo { font-size: .88rem; color: var(--text); line-height: 1.65; }
 .step-conteudo code {
   background: var(--surface2); border: 1px solid var(--border);
   border-radius: 4px; padding: .1em .45em;
@@ -48,48 +43,23 @@
   font-family: var(--mono); font-size: .82rem; color: var(--accent);
 }
 
-/* ── DECISÃO (passo 6) — evita quebra de linha indesejada ── */
-.decisao-inline {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: .25rem .35rem;
-  font-family: var(--mono);
-  font-size: .88rem;
-  line-height: 1.7;
-}
-.decisao-inline .d-chunk {
-  white-space: nowrap;
-}
-
-/* ── GRÁFICO ─────────────────────────────────────────────── */
-.chart-area {
-  margin-bottom: 1.5rem;
-}
-.chart-title {
-  font-family: var(--mono); font-size: .7rem; color: var(--muted);
-  text-transform: uppercase; letter-spacing: .1em; margin-bottom: .85rem;
-}
+/* ── GRÁFICO DE BARRAS O vs E ────────────────────────────── */
 .bar-row {
   display: grid; grid-template-columns: 90px 1fr 1fr 80px;
-  align-items: center; gap: .5rem; margin-bottom: .55rem;
-  font-size: .78rem;
+  align-items: center; gap: .5rem; margin-bottom: .55rem; font-size: .78rem;
 }
 .bar-label {
   font-family: var(--mono); font-size: .72rem; color: var(--muted);
-  text-align: right; white-space: nowrap; overflow: hidden;
-  text-overflow: ellipsis;
+  text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .bar-track { height: 18px; border-radius: 4px; background: var(--surface2); }
-.bar-obs   { height: 18px; border-radius: 4px; background: var(--accent);
-             transition: width .6s cubic-bezier(.22,1,.36,1); }
-.bar-esp   { height: 18px; border-radius: 4px;
-             background: rgba(8,145,178,.25); border: 1px dashed var(--accent2);
-             transition: width .6s cubic-bezier(.22,1,.36,1); }
-.bar-val {
-  font-family: var(--mono); font-size: .7rem; color: var(--muted);
-  display: flex; flex-direction: column; gap: .1rem;
-}
+.bar-obs { height: 18px; border-radius: 4px; background: var(--accent);
+           transition: width .6s cubic-bezier(.22,1,.36,1); }
+.bar-esp { height: 18px; border-radius: 4px;
+           background: rgba(8,145,178,.25); border: 1px dashed var(--accent2);
+           transition: width .6s cubic-bezier(.22,1,.36,1); }
+.bar-val { font-family: var(--mono); font-size: .7rem; color: var(--muted);
+           display: flex; flex-direction: column; gap: .1rem; }
 .bar-val .v-obs { color: var(--accent); }
 .bar-val .v-esp { color: var(--accent2); }
 .chart-legend {
@@ -99,18 +69,73 @@
 .leg-dot { display: inline-block; width: 10px; height: 10px;
            border-radius: 2px; margin-right: .35rem; vertical-align: middle; }
 
+/* ── GRÁFICO CURVA χ² ────────────────────────────────────── */
+.chi2-chart-wrap { width: 100%; overflow: hidden; margin-bottom: .6rem; }
+.chi2-chart-wrap canvas { width: 100% !important; height: auto !important; display: block; }
+.chi2-legend {
+  display: flex; gap: 1.5rem; flex-wrap: wrap;
+  font-family: var(--mono); font-size: .72rem; color: var(--muted); margin-top: .5rem;
+}
+.chi2-legend span { display: flex; align-items: center; gap: .4rem; }
+.chi2-ldot { display: inline-block; width: 18px; height: 3px; border-radius: 2px; }
+
+/* ── HEATMAP ─────────────────────────────────────────────── */
+.heatmap-wrap { overflow-x: auto; }
+.heatmap-table {
+  width: 100%; border-collapse: separate; border-spacing: 3px;
+  font-family: var(--mono); font-size: .8rem;
+}
+.heatmap-table th {
+  background: var(--surface2); color: var(--muted); font-weight: 500;
+  padding: .5rem .75rem; text-align: center; border-radius: 5px;
+  letter-spacing: .04em; white-space: nowrap;
+}
+.heatmap-table th.row-header { text-align: left; }
+.heatmap-table td {
+  padding: .5rem .6rem; text-align: center; border-radius: 5px;
+  transition: transform .15s, box-shadow .15s; position: relative; cursor: default;
+}
+.heatmap-table td:hover { transform: scale(1.07); z-index: 2; box-shadow: 0 4px 12px rgba(0,0,0,.15); }
+.hm-obs  { font-weight: 600; font-size: .85rem; }
+.hm-esp  { font-size: .7rem; opacity: .8; margin-top: .1rem; }
+.hm-comp { font-size: .66rem; margin-top: .12rem; font-weight: 500; }
+.heatmap-scale {
+  display: flex; align-items: center; gap: .75rem; margin-top: .85rem;
+  font-family: var(--mono); font-size: .7rem; color: var(--muted);
+}
+.scale-bar {
+  flex: 1; height: 8px; border-radius: 4px;
+  background: linear-gradient(to right, #e8f0fe, #93c5fd, #3b82f6, #1e40af, #7f1d1d);
+}
+
 /* ── INTERPRETAÇÃO ───────────────────────────────────────── */
 .interp-box {
   background: var(--surface2); border: 1px solid var(--border);
-  border-left: 4px solid var(--accent2);
-  border-radius: 8px; padding: 1.1rem 1.25rem;
-  font-size: .88rem; line-height: 1.7; color: var(--text);
-  margin-bottom: 1.5rem;
+  border-left: 4px solid var(--accent2); border-radius: 8px;
+  padding: 1.1rem 1.25rem; font-size: .88rem; line-height: 1.7;
+  color: var(--text); margin-bottom: 1.5rem;
 }
 .interp-label {
   font-family: var(--mono); font-size: .63rem; color: var(--accent2);
   text-transform: uppercase; letter-spacing: .12em; margin-bottom: .45rem;
 }
+
+/* ── ABAS ────────────────────────────────────────────────── */
+.viz-tabs {
+  display: flex; gap: .4rem; margin-bottom: 1rem; flex-wrap: wrap;
+  border-bottom: 1px solid var(--border); padding-bottom: .5rem;
+}
+.viz-tab {
+  font-family: var(--mono); font-size: .72rem; font-weight: 500;
+  padding: .38rem .9rem; border-radius: 6px; cursor: pointer;
+  border: 1px solid var(--border); background: transparent;
+  color: var(--muted); transition: all .18s; letter-spacing: .04em;
+}
+.viz-tab:hover { border-color: var(--accent); color: var(--accent); }
+.viz-tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+.viz-panel { display: none; }
+.viz-panel.active { display: block; animation: fadeIn .2s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 </style>
 
 {# ── BANNER DE DECISÃO ─────────────────────────────────── #}
@@ -127,57 +152,189 @@
 
 {# ── PILLS ─────────────────────────────────────────────── #}
 <div class="stats-row">
+  <div class="stat-pill"><div class="pill-label">χ² calculado</div><div class="pill-value">{{ resultado.qui2_calculado }}</div></div>
+  <div class="stat-pill"><div class="pill-label">χ² crítico</div><div class="pill-value">{{ resultado.qui2_critico }}</div></div>
+  <div class="stat-pill"><div class="pill-label">p-valor</div><div class="pill-value">{{ resultado.p_valor }}</div></div>
+  <div class="stat-pill"><div class="pill-label">GL</div><div class="pill-value">{{ resultado.graus_liberdade }}</div></div>
   {% if tipo == 'aderencia' %}
-  <div class="stat-pill"><div class="pill-label">χ² calculado</div><div class="pill-value">{{ resultado.qui2_calculado }}</div></div>
-  <div class="stat-pill"><div class="pill-label">χ² crítico</div><div class="pill-value">{{ resultado.qui2_critico }}</div></div>
-  <div class="stat-pill"><div class="pill-label">p-valor</div><div class="pill-value">{{ resultado.p_valor }}</div></div>
-  <div class="stat-pill"><div class="pill-label">GL</div><div class="pill-value">{{ resultado.graus_liberdade }}</div></div>
-  <div class="stat-pill"><div class="pill-label">n</div><div class="pill-value">{{ resultado.n }}</div></div>
+    <div class="stat-pill"><div class="pill-label">n</div><div class="pill-value">{{ resultado.n }}</div></div>
+  {% elif tipo == 'independencia' %}
+    <div class="stat-pill"><div class="pill-label">Tabela</div><div class="pill-value">{{ resultado.n_linhas }}×{{ resultado.n_colunas }}</div></div>
   {% else %}
-  <div class="stat-pill"><div class="pill-label">χ² calculado</div><div class="pill-value">{{ resultado.qui2_calculado }}</div></div>
-  <div class="stat-pill"><div class="pill-label">χ² crítico</div><div class="pill-value">{{ resultado.qui2_critico }}</div></div>
-  <div class="stat-pill"><div class="pill-label">p-valor</div><div class="pill-value">{{ resultado.p_valor }}</div></div>
-  <div class="stat-pill"><div class="pill-label">GL</div><div class="pill-value">{{ resultado.graus_liberdade }}</div></div>
-  {% if tipo == 'independencia' %}
-  <div class="stat-pill"><div class="pill-label">Tabela</div><div class="pill-value">{{ resultado.n_linhas }}×{{ resultado.n_colunas }}</div></div>
-  {% else %}
-  <div class="stat-pill"><div class="pill-label">Grupos</div><div class="pill-value">{{ resultado.n_grupos }}</div></div>
-  {% endif %}
+    <div class="stat-pill"><div class="pill-label">Grupos</div><div class="pill-value">{{ resultado.n_grupos }}</div></div>
   {% endif %}
 </div>
 
-{# ── GRÁFICO O vs E (só aderência) ─────────────────────── #}
-{% if tipo == 'aderencia' and rotulos_obs %}
-{% set max_val = resultado.observadas | max %}
-<div class="card chart-area">
-  <div class="card-title">Frequências Observadas vs Esperadas</div>
-  {% for i in range(resultado.k) %}
-  {% set pct_obs = (resultado.observadas[i] / max_val * 100) | round(1) %}
-  {% set pct_esp = (resultado.esperadas[i]  / max_val * 100) | round(1) %}
-  <div class="bar-row">
-    <div class="bar-label">{{ rotulos_obs[i] }}</div>
-    <div>
-      <div class="bar-track">
-        <div class="bar-obs" style="width:{{ pct_obs }}%"></div>
-      </div>
+{# ── CARD DE VISUALIZAÇÕES ─────────────────────────────── #}
+{% set uid = resultado.qui2_calculado | string | replace('.','') %}
+<div class="card">
+  <div class="card-title">Visualizações</div>
+
+  <div class="viz-tabs">
+    <button class="viz-tab active" onclick="vizTab(this,'chi2-{{ uid }}')">Distribuição χ²</button>
+    {% if tipo == 'aderencia' and rotulos_obs %}
+    <button class="viz-tab" onclick="vizTab(this,'bars-{{ uid }}')">Frequências O vs E</button>
+    {% endif %}
+    <button class="viz-tab" onclick="vizTab(this,'heat-{{ uid }}')">Heatmap de Contribuições</button>
+  </div>
+
+  {# ── PAINEL: Curva χ² ─────────────────────────────────── #}
+  <div class="viz-panel active" id="chi2-{{ uid }}">
+    <div class="chi2-chart-wrap">
+      <canvas id="c-{{ uid }}"
+        data-gl="{{ resultado.graus_liberdade }}"
+        data-calc="{{ resultado.qui2_calculado }}"
+        data-crit="{{ resultado.qui2_critico }}"
+        data-rejeita="{{ 'true' if resultado.rejeita_h0 else 'false' }}"
+        width="760" height="280">
+      </canvas>
     </div>
-    <div>
-      <div class="bar-track">
-        <div class="bar-esp" style="width:{{ pct_esp }}%"></div>
-      </div>
-    </div>
-    <div class="bar-val">
-      <span class="v-obs">O: {{ resultado.observadas[i] | int }}</span>
-      <span class="v-esp">E: {{ "%.1f"|format(resultado.esperadas[i]) }}</span>
+    <div class="chi2-legend">
+      <span><span class="chi2-ldot" style="background:#3b82f6"></span>Curva χ²(GL={{ resultado.graus_liberdade }})</span>
+      <span><span class="chi2-ldot" style="background:rgba(239,68,68,.5)"></span>Região de rejeição (α={{ resultado.alpha }})</span>
+      <span><span class="chi2-ldot" style="background:#f59e0b"></span>χ²calc = {{ resultado.qui2_calculado }}</span>
+      <span><span class="chi2-ldot" style="background:#ef4444"></span>χ²crítico = {{ resultado.qui2_critico }}</span>
     </div>
   </div>
-  {% endfor %}
-  <div class="chart-legend">
-    <span><span class="leg-dot" style="background:var(--accent)"></span>Observada (O)</span>
-    <span><span class="leg-dot" style="background:rgba(8,145,178,.35);border:1px dashed var(--accent2)"></span>Esperada (E)</span>
+
+  {# ── PAINEL: Barras O vs E ────────────────────────────── #}
+  {% if tipo == 'aderencia' and rotulos_obs %}
+  {% set max_val = resultado.observadas | max %}
+  <div class="viz-panel" id="bars-{{ uid }}">
+    {% for i in range(resultado.k) %}
+    {% set pct_obs = (resultado.observadas[i] / max_val * 100) | round(1) %}
+    {% set pct_esp = (resultado.esperadas[i]  / max_val * 100) | round(1) %}
+    <div class="bar-row">
+      <div class="bar-label">{{ rotulos_obs[i] }}</div>
+      <div><div class="bar-track"><div class="bar-obs" style="width:{{ pct_obs }}%"></div></div></div>
+      <div><div class="bar-track"><div class="bar-esp" style="width:{{ pct_esp }}%"></div></div></div>
+      <div class="bar-val">
+        <span class="v-obs">O: {{ resultado.observadas[i] | int }}</span>
+        <span class="v-esp">E: {{ "%.1f"|format(resultado.esperadas[i]) }}</span>
+      </div>
+    </div>
+    {% endfor %}
+    <div class="chart-legend">
+      <span><span class="leg-dot" style="background:var(--accent)"></span>Observada (O)</span>
+      <span><span class="leg-dot" style="background:rgba(8,145,178,.35);border:1px dashed var(--accent2)"></span>Esperada (E)</span>
+    </div>
   </div>
-</div>
-{% endif %}
+  {% endif %}
+
+  {# ── PAINEL: Heatmap ──────────────────────────────────── #}
+  <div class="viz-panel" id="heat-{{ uid }}">
+
+    {% if tipo == 'aderencia' %}
+    {# ── Aderência: tabela linear ── #}
+    <p style="font-family:var(--mono);font-size:.72rem;color:var(--muted);margin-bottom:.85rem;">
+      A intensidade da cor representa a contribuição <strong>(O−E)²/E</strong> de cada categoria.
+      Categorias mais escuras afastam mais a distribuição da hipótese nula.
+    </p>
+    <div class="heatmap-wrap">
+      <table class="heatmap-table" data-comps="{{ resultado.componentes | join(',') }}">
+        <thead>
+          <tr>
+            <th class="row-header">Categoria</th>
+            <th>O (obs.)</th>
+            <th>E (esp.)</th>
+            <th>O − E</th>
+            <th>(O−E)²/E</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for i in range(resultado.k) %}
+          <tr>
+            <td style="text-align:left;font-weight:500">{{ rotulos_obs[i] if rotulos_obs else ('Cat ' ~ (i+1)) }}</td>
+            <td class="hm-cell" data-comp="{{ resultado.componentes[i] }}">
+              <div class="hm-obs">{{ resultado.observadas[i] | int }}</div>
+            </td>
+            <td>{{ "%.2f"|format(resultado.esperadas[i]) }}</td>
+            <td>{{ "%.2f"|format(resultado.observadas[i] - resultado.esperadas[i]) }}</td>
+            <td class="hm-cell" data-comp="{{ resultado.componentes[i] }}">
+              <div class="hm-obs">{{ "%.4f"|format(resultado.componentes[i]) }}</div>
+            </td>
+          </tr>
+          {% endfor %}
+          <tr style="font-weight:700">
+            <td>Total</td>
+            <td>{{ resultado.n }}</td>
+            <td>{{ "%.2f"|format(resultado.esperadas | sum) }}</td>
+            <td>—</td>
+            <td style="color:var(--accent)">{{ resultado.qui2_calculado }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    {% else %}
+    {# ── Independência / Homogeneidade: matriz ── #}
+    {% set n_rows = resultado.n_linhas if tipo == 'independencia' else resultado.n_grupos %}
+    {% set n_cols = resultado.n_colunas if tipo == 'independencia' else resultado.n_categorias %}
+    {% set totais_linhas  = resultado.totais_linhas  if tipo == 'independencia' else resultado.totais_grupos %}
+    {% set totais_colunas = resultado.totais_colunas if tipo == 'independencia' else resultado.totais_categorias %}
+
+    {% set all_comps_ns = namespace(v=[]) %}
+    {% for i in range(n_rows) %}
+      {% for j in range(n_cols) %}
+        {% set all_comps_ns.v = all_comps_ns.v + [resultado.componentes[i][j]] %}
+      {% endfor %}
+    {% endfor %}
+
+    <p style="font-family:var(--mono);font-size:.72rem;color:var(--muted);margin-bottom:.85rem;">
+      Cada célula mostra <strong>O</strong> / <em>E</em> / contribuição.
+      Células mais escuras são as que mais impulsionam o χ² — indicam onde as frequências
+      observadas mais se afastam do esperado sob H₀.
+    </p>
+    <div class="heatmap-wrap">
+      <table class="heatmap-table" data-comps="{{ all_comps_ns.v | join(',') }}">
+        <thead>
+          <tr>
+            <th class="row-header"></th>
+            {% if rotulos_colunas %}
+              {% for col in rotulos_colunas %}<th>{{ col }}</th>{% endfor %}
+            {% else %}
+              {% for j in range(n_cols) %}
+                <th>{{ 'Col '~(j+1) if tipo=='independencia' else 'Cat '~(j+1) }}</th>
+              {% endfor %}
+            {% endif %}
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for i in range(n_rows) %}
+          <tr>
+            <td style="text-align:left;font-weight:500;white-space:nowrap;color:var(--text)">
+              {{ rotulos_linhas[i] if rotulos_linhas else ('Linha '~(i+1) if tipo=='independencia' else 'Grupo '~(i+1)) }}
+            </td>
+            {% for j in range(n_cols) %}
+            <td class="hm-cell" data-comp="{{ resultado.componentes[i][j] }}"
+                title="O={{ resultado.observadas[i][j]|int }} | E={{ resultado.esperadas[i][j] }} | contrib={{ resultado.componentes[i][j] }}">
+              <div class="hm-obs">{{ resultado.observadas[i][j] | int }}</div>
+              <div class="hm-esp">E:{{ resultado.esperadas[i][j] }}</div>
+              <div class="hm-comp">{{ "%.3f"|format(resultado.componentes[i][j]) }}</div>
+            </td>
+            {% endfor %}
+            <td style="font-weight:600;color:var(--muted)">{{ totais_linhas[i] }}</td>
+          </tr>
+          {% endfor %}
+          <tr style="font-weight:600">
+            <td>Total</td>
+            {% for t in totais_colunas %}<td style="color:var(--muted)">{{ t }}</td>{% endfor %}
+            <td style="color:var(--accent)">{{ resultado.total_geral }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+
+    <div class="heatmap-scale">
+      <span style="white-space:nowrap">Baixa contribuição</span>
+      <div class="scale-bar"></div>
+      <span style="white-space:nowrap">Alta contribuição</span>
+    </div>
+  </div>{# /heat #}
+
+</div>{# /card visualizações #}
 
 {# ── PASSO A PASSO ─────────────────────────────────────── #}
 {% if passos %}
@@ -209,95 +366,39 @@
 </div>
 {% endif %}
 
-{# ── TABELA DETALHADA ──────────────────────────────────── #}
-{% if tipo == 'aderencia' %}
+{# ── TABELA DETALHADA (details) ────────────────────────── #}
+{% if tipo != 'aderencia' %}
+{% set n_rows = resultado.n_linhas if tipo == 'independencia' else resultado.n_grupos %}
+{% set n_cols = resultado.n_colunas if tipo == 'independencia' else resultado.n_categorias %}
+{% set totais_linhas  = resultado.totais_linhas  if tipo == 'independencia' else resultado.totais_grupos %}
+{% set totais_colunas = resultado.totais_colunas if tipo == 'independencia' else resultado.totais_categorias %}
 <details>
-  <summary style="cursor:pointer; font-family:var(--mono); font-size:.75rem;
-    color:var(--muted); margin-bottom:.75rem; padding:.5rem 0;">
-    ▸ Ver tabela de cálculo completa
+  <summary style="cursor:pointer;font-family:var(--mono);font-size:.75rem;color:var(--muted);padding:.5rem 0;">
+    ▸ Ver tabelas completas (observada e esperada)
   </summary>
-  <div class="card">
-    <div class="tbl-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Categoria</th>
-            <th>Obs. (O)</th>
-            <th>Esp. (E)</th>
-            <th>O − E</th>
-            <th>(O−E)²</th>
-            <th>(O−E)²/E</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for i in range(resultado.k) %}
-          <tr>
-            <td>{{ rotulos_obs[i] if rotulos_obs else i+1 }}</td>
-            <td>{{ resultado.observadas[i] | int }}</td>
-            <td>{{ "%.4f"|format(resultado.esperadas[i]) }}</td>
-            <td>{{ "%.4f"|format(resultado.observadas[i] - resultado.esperadas[i]) }}</td>
-            <td>{{ "%.4f"|format((resultado.observadas[i] - resultado.esperadas[i])**2) }}</td>
-            <td>{{ "%.4f"|format(resultado.componentes[i]) }}</td>
-          </tr>
-          {% endfor %}
-          <tr style="font-weight:600; color:var(--accent)">
-            <td>Total</td>
-            <td>{{ resultado.n }}</td>
-            <td>{{ "%.4f"|format(resultado.esperadas | sum) }}</td>
-            <td>—</td>
-            <td>—</td>
-            <td>{{ resultado.qui2_calculado }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-</details>
-
-{% else %}
-<details>
-  <summary style="cursor:pointer; font-family:var(--mono); font-size:.75rem;
-    color:var(--muted); margin-bottom:.75rem; padding:.5rem 0;">
-    ▸ Ver tabelas observada, esperada e contribuições
-  </summary>
-  <div class="card">
+  <div class="card" style="margin-top:.75rem">
     <div class="card-title">Observadas</div>
     <div class="tbl-wrap">
       <table>
         <thead>
           <tr>
             <th></th>
-            {% if rotulos_colunas %}
-              {% for col in rotulos_colunas %}<th>{{ col }}</th>{% endfor %}
-            {% else %}
-              {% if tipo == 'independencia' %}
-                {% for j in range(resultado.n_colunas) %}<th>Col {{ j+1 }}</th>{% endfor %}
-              {% else %}
-                {% for j in range(resultado.n_categorias) %}<th>Cat {{ j+1 }}</th>{% endfor %}
-              {% endif %}
-            {% endif %}
+            {% if rotulos_colunas %}{% for col in rotulos_colunas %}<th>{{ col }}</th>{% endfor %}
+            {% else %}{% for j in range(n_cols) %}<th>{{ 'Col '~(j+1) if tipo=='independencia' else 'Cat '~(j+1) }}</th>{% endfor %}{% endif %}
             <th>Total</th>
           </tr>
         </thead>
         <tbody>
-          {% set n_rows = resultado.n_linhas if tipo == 'independencia' else resultado.n_grupos %}
-          {% set n_cols = resultado.n_colunas if tipo == 'independencia' else resultado.n_categorias %}
-          {% set totais = resultado.totais_linhas if tipo == 'independencia' else resultado.totais_grupos %}
           {% for i in range(n_rows) %}
           <tr>
-            <td>{{ rotulos_linhas[i] if rotulos_linhas else ('Linha ' ~ (i+1) if tipo == 'independencia' else 'Grupo ' ~ (i+1)) }}</td>
-            {% for j in range(n_cols) %}
-            <td>{{ resultado.observadas[i][j] | int }}</td>
-            {% endfor %}
-            <td><strong>{{ totais[i] }}</strong></td>
+            <td>{{ rotulos_linhas[i] if rotulos_linhas else ('Linha '~(i+1) if tipo=='independencia' else 'Grupo '~(i+1)) }}</td>
+            {% for j in range(n_cols) %}<td>{{ resultado.observadas[i][j]|int }}</td>{% endfor %}
+            <td><strong>{{ totais_linhas[i] }}</strong></td>
           </tr>
           {% endfor %}
-          <tr style="font-weight:600">
-            <td>Total</td>
-            {% set totais_cols = resultado.totais_colunas if tipo == 'independencia' else resultado.totais_categorias %}
-            {% for t in totais_cols %}<td><strong>{{ t }}</strong></td>{% endfor %}
-            <td><strong>{{ resultado.total_geral }}</strong></td>
-          </tr>
+          <tr style="font-weight:600"><td>Total</td>
+          {% for t in totais_colunas %}<td><strong>{{ t }}</strong></td>{% endfor %}
+          <td><strong>{{ resultado.total_geral }}</strong></td></tr>
         </tbody>
       </table>
     </div>
@@ -307,22 +408,15 @@
     <div class="tbl-wrap">
       <table>
         <thead>
-          <tr>
-            <th></th>
-            {% if tipo == 'independencia' %}
-              {% for j in range(resultado.n_colunas) %}<th>Col {{ j+1 }}</th>{% endfor %}
-            {% else %}
-              {% for j in range(resultado.n_categorias) %}<th>Cat {{ j+1 }}</th>{% endfor %}
-            {% endif %}
+          <tr><th></th>
+          {% for j in range(n_cols) %}<th>{{ 'Col '~(j+1) if tipo=='independencia' else 'Cat '~(j+1) }}</th>{% endfor %}
           </tr>
         </thead>
         <tbody>
           {% for i in range(n_rows) %}
           <tr>
-            <td>{{ rotulos_linhas[i] if rotulos_linhas else ('Linha ' ~ (i+1) if tipo == 'independencia' else 'Grupo ' ~ (i+1)) }}</td>
-            {% for j in range(n_cols) %}
-            <td>{{ resultado.esperadas[i][j] }}</td>
-            {% endfor %}
+            <td>{{ rotulos_linhas[i] if rotulos_linhas else ('Linha '~(i+1) if tipo=='independencia' else 'Grupo '~(i+1)) }}</td>
+            {% for j in range(n_cols) %}<td>{{ resultado.esperadas[i][j] }}</td>{% endfor %}
           </tr>
           {% endfor %}
         </tbody>
@@ -331,5 +425,204 @@
   </div>
 </details>
 {% endif %}
+
+{# ── SCRIPTS ───────────────────────────────────────────── #}
+<script>
+(function () {
+
+  /* ── SISTEMA DE ABAS ─────────────────────────────────── */
+  window.vizTab = function (btn, panelId) {
+    const card = btn.closest('.card');
+    card.querySelectorAll('.viz-tab').forEach(t => t.classList.remove('active'));
+    card.querySelectorAll('.viz-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    const panel = document.getElementById(panelId);
+    if (panel) panel.classList.add('active');
+  };
+
+  /* ── HEATMAP: colorir células ────────────────────────── */
+  function heatColor(t) {
+    const stops = [
+      [232, 240, 254],  // 0   → azul muito claro
+      [147, 197, 253],  // .30 → azul claro
+      [ 59, 130, 246],  // .60 → azul médio
+      [ 30,  64, 175],  // .82 → azul escuro
+      [127,  29,  29],  // 1.0 → vermelho escuro
+    ];
+    const pos = [0, 0.30, 0.60, 0.82, 1.0];
+    let i = 0;
+    while (i < pos.length - 2 && t > pos[i + 1]) i++;
+    const f = pos[i+1] === pos[i] ? 0 : (t - pos[i]) / (pos[i+1] - pos[i]);
+    const r = Math.round(stops[i][0] + f * (stops[i+1][0] - stops[i][0]));
+    const g = Math.round(stops[i][1] + f * (stops[i+1][1] - stops[i][1]));
+    const b = Math.round(stops[i][2] + f * (stops[i+1][2] - stops[i][2]));
+    return [r, g, b];
+  }
+
+  document.querySelectorAll('.heatmap-table').forEach(function (tbl) {
+    const raw = (tbl.dataset.comps || '').split(',').map(Number).filter(n => !isNaN(n));
+    const maxC = Math.max(...raw, 0.001);
+    tbl.querySelectorAll('.hm-cell').forEach(function (cell) {
+      const v = parseFloat(cell.dataset.comp) || 0;
+      const t = v / maxC;
+      const [r, g, b] = heatColor(t);
+      cell.style.background = `rgb(${r},${g},${b})`;
+      cell.style.color = t > 0.50 ? '#fff' : '#1e2235';
+    });
+  });
+
+  /* ── CURVA χ²: desenhar canvas ───────────────────────── */
+  function lnGamma(z) {
+    if (z < 0.5) return Math.log(Math.PI / Math.sin(Math.PI * z)) - lnGamma(1 - z);
+    z -= 1;
+    const c = [0.99999999999980993,676.5203681218851,-1259.1392167224028,
+               771.32342877765313,-176.61502916214059,12.507343278686905,
+               -0.13857109526572012,9.9843695780195716e-6,1.5056327351493116e-7];
+    let x = c[0];
+    for (let i = 1; i <= 8; i++) x += c[i] / (z + i);
+    const t = z + 7.5;
+    return 0.5 * Math.log(2 * Math.PI) + (z + 0.5) * Math.log(t) - t + Math.log(x);
+  }
+
+  function chi2pdf(x, k) {
+    if (x <= 0) return 0;
+    return Math.exp((k / 2 - 1) * Math.log(x) - x / 2 - (k / 2) * Math.log(2) - lnGamma(k / 2));
+  }
+
+  function drawChi2(canvas) {
+    const gl      = parseInt(canvas.dataset.gl);
+    const calc    = parseFloat(canvas.dataset.calc);
+    const crit    = parseFloat(canvas.dataset.crit);
+    const rejeita = canvas.dataset.rejeita === 'true';
+
+    const W = 760, H = 280;
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width  = W * dpr;
+    canvas.height = H * dpr;
+    canvas.style.width  = W + 'px';
+    canvas.style.height = H + 'px';
+    const ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+
+    const pad = { top: 32, right: 36, bottom: 44, left: 46 };
+    const cw = W - pad.left - pad.right;
+    const ch = H - pad.top  - pad.bottom;
+
+    const xMax = Math.max(crit * 2.6, calc * 1.4, gl * 3.8, 10);
+    const N = 500;
+    const xs = [], ys = [];
+    let yMax = 0;
+    for (let i = 0; i <= N; i++) {
+      const x = (i / N) * xMax + 0.001;
+      const y = chi2pdf(x, gl);
+      xs.push(x); ys.push(y);
+      if (y > yMax) yMax = y;
+    }
+    yMax *= 1.15;
+
+    const px = x => pad.left + (x / xMax) * cw;
+    const py = y => pad.top  + ch - (y / yMax) * ch;
+
+    ctx.clearRect(0, 0, W, H);
+
+    // região de rejeição
+    ctx.beginPath();
+    let inCrit = false;
+    for (let i = 0; i < xs.length; i++) {
+      if (xs[i] >= crit) {
+        if (!inCrit) { ctx.moveTo(px(xs[i]), py(0)); inCrit = true; }
+        ctx.lineTo(px(xs[i]), py(ys[i]));
+      }
+    }
+    ctx.lineTo(px(xMax), py(0));
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(239,68,68,.15)';
+    ctx.fill();
+
+    // curva
+    ctx.beginPath();
+    ctx.moveTo(px(xs[0]), py(ys[0]));
+    for (let i = 1; i < xs.length; i++) ctx.lineTo(px(xs[i]), py(ys[i]));
+    ctx.strokeStyle = '#3b82f6';
+    ctx.lineWidth = 2.4;
+    ctx.lineJoin = 'round';
+    ctx.stroke();
+
+    // linha crítica
+    ctx.setLineDash([6, 4]);
+    ctx.beginPath();
+    ctx.moveTo(px(crit), py(0));
+    ctx.lineTo(px(crit), py(yMax * 0.72));
+    ctx.strokeStyle = '#ef4444';
+    ctx.lineWidth = 1.8;
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#ef4444';
+    ctx.font = `500 11px 'DM Mono', monospace`;
+    ctx.textAlign = 'center';
+    ctx.fillText('χ²c = ' + crit, px(crit), pad.top + 14);
+
+    // linha calc
+    const calcColor = rejeita ? '#d97706' : '#16a34a';
+    ctx.setLineDash([4, 3]);
+    ctx.beginPath();
+    ctx.moveTo(px(calc), py(0));
+    ctx.lineTo(px(calc), py(yMax * 0.55));
+    ctx.strokeStyle = calcColor;
+    ctx.lineWidth = 2.2;
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = calcColor;
+    ctx.textAlign = calc > crit * 0.85 ? 'right' : 'center';
+    const labelPx = Math.min(px(calc), W - pad.right - 5);
+    ctx.fillText('χ²calc = ' + calc, labelPx, pad.top + 26);
+
+    // eixo X
+    ctx.beginPath();
+    ctx.moveTo(pad.left, pad.top + ch);
+    ctx.lineTo(pad.left + cw, pad.top + ch);
+    ctx.strokeStyle = '#dde1ef';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    const ticks = 8;
+    ctx.fillStyle = '#6b7594';
+    ctx.font = `10px 'DM Mono', monospace`;
+    ctx.textAlign = 'center';
+    for (let i = 0; i <= ticks; i++) {
+      const xv = (xMax / ticks) * i;
+      const xp = px(xv);
+      ctx.beginPath();
+      ctx.moveTo(xp, pad.top + ch);
+      ctx.lineTo(xp, pad.top + ch + 4);
+      ctx.strokeStyle = '#dde1ef';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      ctx.fillText(xv.toFixed(1), xp, pad.top + ch + 15);
+    }
+
+    // label eixo Y
+    ctx.save();
+    ctx.translate(14, pad.top + ch / 2);
+    ctx.rotate(-Math.PI / 2);
+    ctx.fillStyle = '#6b7594';
+    ctx.textAlign = 'center';
+    ctx.fillText('f (x)', 0, 0);
+    ctx.restore();
+
+    // anotação região de rejeição
+    if (crit < xMax * 0.85) {
+      const midRej = px((crit + xMax) / 2);
+      ctx.fillStyle = 'rgba(239,68,68,.6)';
+      ctx.font = `bold 10px 'DM Mono', monospace`;
+      ctx.textAlign = 'center';
+      ctx.fillText('Região de rejeição', Math.min(midRej, W - pad.right - 5), pad.top + ch - 8);
+    }
+  }
+
+  document.querySelectorAll('canvas[data-gl]').forEach(drawChi2);
+
+})();
+</script>
 
 {% endmacro %}
