@@ -17,19 +17,19 @@
   border: 2px solid var(--border);
   background: var(--surface2);
   display: flex; align-items: center; justify-content: center;
-  font-family: var(--mono); font-size: .75rem; font-weight: 700;
+  font-family: var(--mono); font-size: .75rem; font-weight: 500;
   color: var(--muted); flex-shrink: 0; z-index: 1;
   transition: border-color .2s, color .2s, background .2s;
 }
 .step.step-decisao .step-num {
   border-color: var(--accent); color: var(--accent);
-  background: rgba(61,127,255,.1);
+  background: rgba(37,99,235,.08);
 }
 .step-body {
   padding: .65rem 0 1.25rem;
 }
 .step-titulo {
-  font-family: var(--mono); font-size: .72rem; font-weight: 600;
+  font-family: var(--mono); font-size: .7rem; font-weight: 500;
   color: var(--muted); text-transform: uppercase; letter-spacing: .1em;
   margin-bottom: .3rem;
 }
@@ -48,12 +48,26 @@
   font-family: var(--mono); font-size: .82rem; color: var(--accent);
 }
 
+/* ── DECISÃO (passo 6) — evita quebra de linha indesejada ── */
+.decisao-inline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .25rem .35rem;
+  font-family: var(--mono);
+  font-size: .88rem;
+  line-height: 1.7;
+}
+.decisao-inline .d-chunk {
+  white-space: nowrap;
+}
+
 /* ── GRÁFICO ─────────────────────────────────────────────── */
 .chart-area {
   margin-bottom: 1.5rem;
 }
 .chart-title {
-  font-family: var(--mono); font-size: .72rem; color: var(--muted);
+  font-family: var(--mono); font-size: .7rem; color: var(--muted);
   text-transform: uppercase; letter-spacing: .1em; margin-bottom: .85rem;
 }
 .bar-row {
@@ -70,7 +84,7 @@
 .bar-obs   { height: 18px; border-radius: 4px; background: var(--accent);
              transition: width .6s cubic-bezier(.22,1,.36,1); }
 .bar-esp   { height: 18px; border-radius: 4px;
-             background: rgba(0,212,170,.45); border: 1px dashed var(--accent2);
+             background: rgba(8,145,178,.25); border: 1px dashed var(--accent2);
              transition: width .6s cubic-bezier(.22,1,.36,1); }
 .bar-val {
   font-family: var(--mono); font-size: .7rem; color: var(--muted);
@@ -94,7 +108,7 @@
   margin-bottom: 1.5rem;
 }
 .interp-label {
-  font-family: var(--mono); font-size: .65rem; color: var(--accent2);
+  font-family: var(--mono); font-size: .63rem; color: var(--accent2);
   text-transform: uppercase; letter-spacing: .12em; margin-bottom: .45rem;
 }
 </style>
@@ -160,7 +174,7 @@
   {% endfor %}
   <div class="chart-legend">
     <span><span class="leg-dot" style="background:var(--accent)"></span>Observada (O)</span>
-    <span><span class="leg-dot" style="background:rgba(0,212,170,.45);border:1px dashed var(--accent2)"></span>Esperada (E)</span>
+    <span><span class="leg-dot" style="background:rgba(8,145,178,.35);border:1px dashed var(--accent2)"></span>Esperada (E)</span>
   </div>
 </div>
 {% endif %}

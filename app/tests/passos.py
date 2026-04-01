@@ -59,7 +59,7 @@ def passos_aderencia(resultado, tipo_esperada: str) -> list[Passo]:
                 f"em <strong>k = {resultado.k}</strong> categorias. "
                 f"Distribuição esperada: {dist}.<br>"
                 f"Calculando <strong>(O − E)² / E</strong> para cada categoria e somando: "
-                f"χ² = {resultado.qui2_calculado}."
+                f"<span style='white-space:nowrap'>χ² = {resultado.qui2_calculado}.</span>"
             ),
             destaque=f"χ²calc = {resultado.qui2_calculado}",
         ),
@@ -70,7 +70,8 @@ def passos_aderencia(resultado, tipo_esperada: str) -> list[Passo]:
                 f"Com <strong>k − 1 = {resultado.graus_liberdade}</strong> graus de liberdade "
                 f"e α = {resultado.alpha}, o valor crítico da tabela qui-quadrado é "
                 f"<strong>χ²c = {resultado.qui2_critico}</strong>.<br>"
-                f"A hipótese nula é rejeitada se χ²calc &gt; χ²c."
+                f"A hipótese nula é rejeitada se "
+                f"<span style='white-space:nowrap'>χ²calc &gt; χ²c.</span>"
             ),
             destaque=f"χ²crítico = {resultado.qui2_critico}",
         ),
@@ -84,22 +85,23 @@ def passos_aderencia(resultado, tipo_esperada: str) -> list[Passo]:
 
 
 def _decisao_aderencia(res) -> str:
-    if res.rejeita_h0:
-        return (
-            f"χ²calc = <strong>{res.qui2_calculado}</strong> &gt; "
-            f"χ²c = <strong>{res.qui2_critico}</strong> → "
-            f"p-valor = <strong>{res.p_valor}</strong> ≤ α = {res.alpha}.<br>"
-            "<strong>REJEITAMOS H₀.</strong> "
-            "Há evidência estatística de que as frequências observadas "
-            "<em>não</em> seguem a distribuição alegada."
-        )
-    return (
-        f"χ²calc = <strong>{res.qui2_calculado}</strong> ≤ "
-        f"χ²c = <strong>{res.qui2_critico}</strong> → "
-        f"p-valor = <strong>{res.p_valor}</strong> &gt; α = {res.alpha}.<br>"
+    sinal = "&gt;" if res.rejeita_h0 else "≤"
+    sinal_p = "≤" if res.rejeita_h0 else "&gt;"
+    conclusao = (
+        "<strong>REJEITAMOS H₀.</strong> "
+        "Há evidência estatística de que as frequências observadas "
+        "<em>não</em> seguem a distribuição alegada."
+    ) if res.rejeita_h0 else (
         "<strong>NÃO REJEITAMOS H₀.</strong> "
         "Não há evidência suficiente para afirmar que as frequências "
         "diferem da distribuição alegada."
+    )
+    return (
+        f"<span style='white-space:nowrap'>χ²calc = <strong>{res.qui2_calculado}</strong> "
+        f"{sinal} χ²c = <strong>{res.qui2_critico}</strong></span> → "
+        f"<span style='white-space:nowrap'>p-valor = <strong>{res.p_valor}</strong> "
+        f"{sinal_p} α = {res.alpha}</span>.<br>"
+        f"{conclusao}"
     )
 
 
@@ -144,7 +146,7 @@ def passos_independencia(resultado) -> list[Passo]:
                 "<code>E = (Total da linha × Total da coluna) / Total geral</code><br>"
                 f"Total geral: <strong>{resultado.total_geral}</strong>. "
                 f"Em seguida, soma-se <strong>(O − E)² / E</strong> para todas as {r*c} células: "
-                f"χ² = {resultado.qui2_calculado}."
+                f"<span style='white-space:nowrap'>χ² = {resultado.qui2_calculado}.</span>"
             ),
             destaque=f"χ²calc = {resultado.qui2_calculado}",
         ),
@@ -152,7 +154,8 @@ def passos_independencia(resultado) -> list[Passo]:
             numero=5,
             titulo="Região crítica",
             conteudo=(
-                f"Graus de liberdade: <strong>(r−1)(c−1) = ({r}−1)×({c}−1) = {resultado.graus_liberdade}</strong>.<br>"
+                f"Graus de liberdade: "
+                f"<strong><span style='white-space:nowrap'>(r−1)(c−1) = ({r}−1)×({c}−1) = {resultado.graus_liberdade}</span></strong>.<br>"
                 f"Valor crítico: <strong>χ²c = {resultado.qui2_critico}</strong> "
                 f"(α = {resultado.alpha}, cauda direita)."
             ),
@@ -209,7 +212,7 @@ def passos_homogeneidade(resultado) -> list[Passo]:
                 "<code>E = (Total do grupo × Total da categoria) / Total geral</code><br>"
                 f"Total geral: <strong>{resultado.total_geral}</strong>. "
                 f"Somando (O − E)² / E para todas as células: "
-                f"χ² = {resultado.qui2_calculado}."
+                f"<span style='white-space:nowrap'>χ² = {resultado.qui2_calculado}.</span>"
             ),
             destaque=f"χ²calc = {resultado.qui2_calculado}",
         ),
@@ -217,7 +220,8 @@ def passos_homogeneidade(resultado) -> list[Passo]:
             numero=5,
             titulo="Região crítica",
             conteudo=(
-                f"Graus de liberdade: <strong>(grupos−1)(cats−1) = ({g}−1)×({c}−1) = {resultado.graus_liberdade}</strong>.<br>"
+                f"Graus de liberdade: "
+                f"<strong><span style='white-space:nowrap'>(grupos−1)(cats−1) = ({g}−1)×({c}−1) = {resultado.graus_liberdade}</span></strong>.<br>"
                 f"Valor crítico: <strong>χ²c = {resultado.qui2_critico}</strong> "
                 f"(α = {resultado.alpha}, cauda direita)."
             ),
@@ -237,18 +241,22 @@ def passos_homogeneidade(resultado) -> list[Passo]:
 # ─────────────────────────────────────────────────────────────
 
 def _decisao_contingencia(res, palavra_h0: str, palavra_h1: str) -> str:
+    sinal = "&gt;" if res.rejeita_h0 else "≤"
+    sinal_p = "≤" if res.rejeita_h0 else "&gt;"
     if res.rejeita_h0:
-        return (
-            f"χ²calc = <strong>{res.qui2_calculado}</strong> &gt; "
-            f"χ²c = <strong>{res.qui2_critico}</strong> → "
-            f"p-valor = <strong>{res.p_valor}</strong> ≤ α = {res.alpha}.<br>"
+        conclusao = (
             f"<strong>REJEITAMOS H₀.</strong> "
             f"Há evidência estatística de que as proporções <em>não</em> são {palavra_h0}."
         )
+    else:
+        conclusao = (
+            f"<strong>NÃO REJEITAMOS H₀.</strong> "
+            f"Não há evidência suficiente para afirmar que as proporções são {palavra_h1}."
+        )
     return (
-        f"χ²calc = <strong>{res.qui2_calculado}</strong> ≤ "
-        f"χ²c = <strong>{res.qui2_critico}</strong> → "
-        f"p-valor = <strong>{res.p_valor}</strong> &gt; α = {res.alpha}.<br>"
-        f"<strong>NÃO REJEITAMOS H₀.</strong> "
-        f"Não há evidência suficiente para afirmar que as proporções são {palavra_h1}."
+        f"<span style='white-space:nowrap'>χ²calc = <strong>{res.qui2_calculado}</strong> "
+        f"{sinal} χ²c = <strong>{res.qui2_critico}</strong></span> → "
+        f"<span style='white-space:nowrap'>p-valor = <strong>{res.p_valor}</strong> "
+        f"{sinal_p} α = {res.alpha}</span>.<br>"
+        f"{conclusao}"
     )
